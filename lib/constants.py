@@ -1,5 +1,8 @@
 import os
-import urlparse
+try:
+    import urllib.parse as urlparse
+except ImportError:
+    import urlparse
 
 lib_path = os.path.realpath(os.path.dirname(__file__))
 database_path = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'database', 'im.db'))

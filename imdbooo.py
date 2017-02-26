@@ -7,15 +7,15 @@ from lib import crawl, models, constants
 
 def print_model(model, fmt_person, fmt_title):
     if model.id.startswith('tt'):
-        print fmt_title.format(id=model.id,
+        print(fmt_title.format(id=model.id,
                                title=model.title,
                                year=model.release_year,
-                               rating=model.rating)
+                               rating=model.rating))
     else:
-        print fmt_person.format(id=model.id,
+        print(fmt_person.format(id=model.id,
                                 firstname=model.firstname,
                                 middlename=model.middlename or 'N/A',
-                                lastname=model.lastname or 'N/A')
+                                lastname=model.lastname or 'N/A'))
 
 def index_routine(args):
 
@@ -40,7 +40,7 @@ def search_routine(args):
     query_url = 'http://v2.sg.media-imdb.com/suggests/{}/{}.json'
     encoded_query = re.sub('\W', '', args.query.lower().replace(' ', '_'))
     if len(encoded_query) < 1:
-        print 'Search query was empty after encoding it.'
+        print('Search query was empty after encoding it.')
         return
 
     json_result_raw = crawl.process_url(query_url.format(encoded_query[0], encoded_query))
@@ -81,6 +81,7 @@ if __name__ == "__main__":
                     """)
 
     sub_parsers = ap.add_subparsers(dest='command')
+    sub_parsers.required = True
 
     search_parser = sub_parsers.add_parser('search')
     search_parser.add_argument('-q', '--query', required=True)
@@ -88,23 +89,26 @@ if __name__ == "__main__":
     index_parser = sub_parsers.add_parser('index')
     index_parser.add_argument('--without-cast', action='store_true', default=False)
     index_parser.add_argument('--without-roles', action='store_true', default=False)
-    model_source = index_parser.add_mutually_exclusive_group()
+    model_source = index_parser.add_mutually_exclusive_group(required=True)
     model_source.add_argument('-u', '--url')
     model_source.add_argument('-f', '--file')
 
     args = ap.parse_args()
 
+    if not args.command:
+        print("wut?")
+
     if args.format_title:
         opening_b = args.format_title.count('{')
         closing_b = args.format_title.count('}')
         if opening_b != closing_b:
-            print >> sys.stderr, '--format-title must contain equal amounts of opening- and closing brackets.'
+            sys.stderr.write('--format-title must contain equal amounts of opening and closing brackets.\n')
             sys.exit(1)
     if args.format_person:
         opening_b = args.format_person.count('{')
         closing_b = args.format_person.count('}')
         if opening_b != closing_b:
-            print >> sys.stderr, '--format-person must contain equal amounts of opening- and closing brackets.'
+            sys.stderr.write('--format-person must contain equal amounts of opening and closing brackets.\n')
             sys.exit(1)
 
     sys.exit(main(args))

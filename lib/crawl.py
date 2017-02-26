@@ -1,6 +1,10 @@
-import urlparse
+try:
+    import urllib.parse as urlparse
+except ImportError:
+    import urlparse
 
-from cStringIO import StringIO
+from io import BytesIO
+
 import pycurl
 
 from lib import constants, factory, parser
@@ -17,7 +21,7 @@ def process_url(url):
     Takes care of submitting a GET request to the passed *url*. The *callback* parameter will
     be used to populate the received data.
     """
-    buffer = StringIO()
+    buffer = BytesIO()
     c = pycurl.Curl()
     c.setopt(c.URL, url)
     c.setopt(c.FOLLOWLOCATION, True)
@@ -43,7 +47,7 @@ def extract_cast(model, db_uri=None):
             new_person = factory.person(source)
             if new_person:
                 if store_model(new_person):
-                    person = get_cached_model(person_id.encode('utf-8'))
+                    person = get_cached_model(person_id.decode('utf-8'))
         if person is not None:
             store_cast_member(model, person)
 
@@ -58,7 +62,7 @@ def extract_acts_by_person(person, db_uri=None):
             new_title = factory.model_builder(source)
             if new_title:
                 if store_model(new_title):
-                    title = get_cached_model(title_id.encode('utf-8'))
+                    title = get_cached_model(title_id.decode('utf-8'))
         if title is not None:
             store_cast_member(title, person)
 
@@ -91,7 +95,7 @@ def models_from_source(source, db_uri=None):
         model = factory.model_builder(model_source, db_uri)
         if model:
             if store_model(model, db_uri):
-                yield get_cached_model(model_id.encode('utf-8'), db_uri)
+                yield get_cached_model(model_id.decode('utf-8'), db_uri)
 
 def models_from_json(json_data, db_uri=None):
     """Parses the passed search result *json_data* and extracts the models contained in it."""
@@ -125,7 +129,7 @@ def models_from_json(json_data, db_uri=None):
         if model:
             store_search_result(json_data.get('q'), model, db_uri)
             if store_model(model, db_uri):
-                yield get_cached_model(result['id'].encode('utf-8'), db_uri)
+                yield get_cached_model(result['id'].decode('utf-8'), db_uri)
 
 def models_from_url(url, db_uri=None):
     """
@@ -135,7 +139,7 @@ def models_from_url(url, db_uri=None):
     try:
         source = process_url(url)
     except AttributeError:
-        print "Failed to find any models in:", url
+        print("Failed to find any models in:", url)
         return
 
     for m in models_from_source(source, db_uri):

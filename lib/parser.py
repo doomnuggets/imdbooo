@@ -10,7 +10,7 @@ def model_id(source):
 
 def model_ids(source):
     """Returns a set of model identifiers found in the passed *source*."""
-    model_id_re = re.compile(u'/((?:tt|nm)\d+)')
+    model_id_re = re.compile('/((?:tt|nm)\d+)')
     return set(model_id_re.findall(source))
 
 def model_type(source):
@@ -61,9 +61,9 @@ def release_year(source):
 
 def genres(source, db_uri=None):
     """Extracts a list of genres from the passed *source*."""
-    import constants
-    from database import get_db
-    from models import Genre
+    from . import constants
+    from .database import get_db
+    from .models import Genre
 
     genre_re = re.compile('itemprop=[\'\"]genre[\'\"]>([\w\-]+?)<')
     genre_strings = genre_re.findall(source)
@@ -90,8 +90,7 @@ def cast(source):
     The tuple consists of two elements: name and id.
     """
     soup = BeautifulSoup(source, 'html.parser')
-    return map(lambda a: a.get('href').split('/', 3)[2],
-               soup.find(id='fullcredits-content').find_all('a'))
+    return [a.get('href').split('/', 3)[2] for a in soup.find(id='fullcredits-content').find_all('a')]
 
 #
 # Below be h00mans

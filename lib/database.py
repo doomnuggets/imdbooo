@@ -47,7 +47,7 @@ def store_cast_member(model, person, db_uri=None):
             db.execute(actor_movie.insert().values([(person.id, model.id)]))
         else:
             db.execute(actor_tvshow.insert().values([(person.id, model.id)]))
-        print '<{}> -> <{}>'.format(person.id, model.id)
+        print('<{}> -> <{}>'.format(person.id, model.id))
         db.commit()
     except sqlalchemy.exc.IntegrityError:
         pass

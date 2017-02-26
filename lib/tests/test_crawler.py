@@ -29,8 +29,6 @@ class TestCrawler(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.db_session.close()
-        cls.db_fd.close()
         os.unlink(cls.db_filepath)
 
 
