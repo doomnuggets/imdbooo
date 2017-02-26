@@ -1,5 +1,7 @@
 # imdbooo
 
+[![Build Status](https://travis-ci.org/doomnuggets/imdbooo.svg?branch=master)](https://travis-ci.org/doomnuggets/imdbooo)
+
 This is not an IMDb scraper - This README is not a lie.
 
 ## How do I do the thing?
