@@ -95,8 +95,8 @@ if __name__ == "__main__":
 
     args = ap.parse_args()
 
-    if not args.command:
-        print("wut?")
+    if os.path.isdir(constants.database_dir) is False:
+        os.mkdir(constants.database_dir)
 
     if args.format_title:
         opening_b = args.format_title.count('{')
