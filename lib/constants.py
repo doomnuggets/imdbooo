@@ -10,5 +10,5 @@ database_path = os.path.join(database_dir, 'im.db')
 database_uri = 'sqlite:///' + database_path
 url_base = 'http://m.imdb.com'
 cast_url = urlparse.urljoin(url_base, 'title/{model_id}/fullcredits/cast')
-fmt_person = '{id} {firstname} {lastname}'
-fmt_title = '{id} {title} {year} {rating}'
+fmt_person = u'{id} {firstname} {lastname}'
+fmt_title = u'{id} {title} {year} {rating}'

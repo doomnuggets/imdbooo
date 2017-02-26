@@ -1,3 +1,4 @@
+import os
 import sys
 import argparse
 import re
@@ -6,6 +7,7 @@ import json
 from lib import crawl, models, constants
 
 def print_model(model, fmt_person, fmt_title):
+    """Prints out a model with the passed *fmt_person* and *fmt_title* format strings."""
     if model.id.startswith('tt'):
         print(fmt_title.format(id=model.id,
                                title=model.title,
@@ -18,7 +20,8 @@ def print_model(model, fmt_person, fmt_title):
                                 lastname=model.lastname or 'N/A'))
 
 def index_routine(args):
-
+    """Indexes as many models as possible either by reading from a source file, passed by the
+    -f / --file argument, or by crawling an URL directly which is passed by -u / --url."""
     if args.url:
         for model in crawl.models_from_url(args.url):
             if isinstance(model, models.Person) and args.without_roles is False:
@@ -27,8 +30,8 @@ def index_routine(args):
                 crawl.extract_cast(model)
             print_model(model, args.format_person, args.format_title)
     else:
-        with open(args.file) as f:
-            source = f.read()
+        with open(args.file) as source_file:
+            source = source_file.read()
         for model in crawl.models_from_source(source):
             if isinstance(model, models.Person):
                 crawl.extract_acts_by_person(model)
@@ -38,7 +41,7 @@ def index_routine(args):
 
 def search_routine(args):
     query_url = 'http://v2.sg.media-imdb.com/suggests/{}/{}.json'
-    encoded_query = re.sub('\W', '', args.query.lower().replace(' ', '_'))
+    encoded_query = re.sub(r'\W', '', args.query.lower().replace(' ', '_'))
     if len(encoded_query) < 1:
         print('Search query was empty after encoding it.')
         return
@@ -102,13 +105,15 @@ if __name__ == "__main__":
         opening_b = args.format_title.count('{')
         closing_b = args.format_title.count('}')
         if opening_b != closing_b:
-            sys.stderr.write('--format-title must contain equal amounts of opening and closing brackets.\n')
+            sys.stderr.write('--format-title must contain equal '
+                             'amounts of opening and closing brackets.\n')
             sys.exit(1)
     if args.format_person:
         opening_b = args.format_person.count('{')
         closing_b = args.format_person.count('}')
         if opening_b != closing_b:
-            sys.stderr.write('--format-person must contain equal amounts of opening and closing brackets.\n')
+            sys.stderr.write('--format-person must contain equal '
+                             'amounts of opening and closing brackets.\n')
             sys.exit(1)
 
     sys.exit(main(args))
