@@ -1,0 +1,14 @@
+appdirs==1.4.0
+backports.shutil-get-terminal-size==1.0.0
+colorama==0.3.7
+funcsigs==1.0.2
+green==2.6.2
+mock==2.0.0
+packaging==16.8
+pbr==1.10.0
+pycurl==7.43.0
+pyparsing==2.1.10
+python-termstyle==0.1.10
+six==1.10.0
+SQLAlchemy==1.1.5
+Unidecode==0.4.20

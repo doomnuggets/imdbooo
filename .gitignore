@@ -1,0 +1,7 @@
+*.pyc
+*.swp
+.ropeproject
+*.ropeproject
+venv/
+database/*.db
+.coverage
