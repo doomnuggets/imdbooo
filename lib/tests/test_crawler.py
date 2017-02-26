@@ -3,7 +3,7 @@ import unittest
 import json
 import tempfile
 
-from lib import crawl
+from lib import crawl, models
 
 class TestCrawler(unittest.TestCase):
 
@@ -17,14 +17,14 @@ class TestCrawler(unittest.TestCase):
         with open(os.path.join(self.here, 'files', 'the_matrix.html')) as f:
             movie_source = f.read()
         for model in crawl.models_from_source(movie_source, self.db_uri):
-            assert model.id == 'nm0233391'
+            assert isinstance(model, (models.Movie, models.TVShow, models.Person)) is True
             break
 
     def test_models_from_json(self):
         with open(os.path.join(self.here, 'files', 'search_result.json')) as f:
             json_data = json.loads(f.read())
         for model in crawl.models_from_json(json_data, self.db_uri):
-            assert model.id == 'tt0133093'
+            assert isinstance(model, models.Movie)
             break
 
     @classmethod

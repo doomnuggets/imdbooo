@@ -59,6 +59,8 @@ def get_cached_model(model_id, db_uri=None):
     Returns a cached model from the database if it matches the *model_id*.
     None is returned when we don't have the model cached yet.
     """
+    if isinstance(model_id, bytes):
+        model_id = model_id.decode('utf-8')
     db = get_db(db_uri)
     for m in (Movie, TVShow, Person):
         existing_model = db.query(m).get(model_id)
