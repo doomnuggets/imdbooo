@@ -1,4 +1,5 @@
 import os
+import random
 import unittest
 import json
 import tempfile
@@ -25,6 +26,12 @@ class TestCrawler(unittest.TestCase):
             json_data = json.loads(f.read())
         for model in crawl.models_from_json(json_data, self.db_uri):
             assert isinstance(model, models.Movie)
+            break
+
+    def test_models_from_url(self):
+        for model in crawl.models_from_url('http://m.imdb.com/title/tt{0:7d}'
+                                           .format(random.randint(1, 9999999))):
+            assert isinstance(model, (models.Movie, models.TVShow, models.Person)) is True
             break
 
     @classmethod
