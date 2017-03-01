@@ -110,10 +110,10 @@ def models_from_json(json_data, db_uri=None):
         if has_elements:
             return
 
-    for result in json_data.get('d'):
-        if not result.get('id'):
-            continue
+    if not json_data or not json_data.get('d'):
+        return
 
+    for result in json_data.get('d'):
         cached_model = get_cached_model(result['id'], db_uri)
         if cached_model:
             store_search_result(json_data.get('q'), cached_model, db_uri)
