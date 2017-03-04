@@ -101,7 +101,7 @@ def models_from_source(source, db_uri=None):
                 yield get_cached_model(model_id, db_uri)
 
 def encode_search_query(query):
-    r = re.sub(r'[^ a-zA-Z0-9]', '', query.lower().replace(' ', '_'), flags=re.VERBOSE)
+    r = re.sub(r'[^a-zA-Z0-9_]', '', query.lower().replace(' ', '_'), flags=re.VERBOSE)
     return r
 
 def models_from_json(json_data, db_uri=None):
