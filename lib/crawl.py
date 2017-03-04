@@ -41,9 +41,8 @@ def extract_cast(model, db_uri=None):
     """
     cast_url = constants.cast_url.format(model_id=model.id)
     cast_source = process_url(cast_url)
-    people = parser.cast(cast_source)
 
-    for person_id in people:
+    for person_id in parser.cast(cast_source):
         person = get_cached_model(person_id, db_uri)
         if person is None:
             # Add the missing person to the database.
