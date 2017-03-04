@@ -1,10 +1,9 @@
 import os
 import sys
 import argparse
-import re
 import json
 
-from lib import crawl, models, constants
+from lib import crawl, models, constants, database
 
 def print_model(model, fmt_person, fmt_title):
     """Prints out a model with the passed *fmt_person* and *fmt_title* format strings."""
@@ -40,12 +39,23 @@ def index_routine(args):
             print_model(model, args.format_person, args.format_title)
 
 def search_routine(args):
-    query_url = 'http://v2.sg.media-imdb.com/suggests/{}/{}.json'
-    encoded_query = re.sub(r'\W', '', args.query.lower().replace(' ', '_'))
-    if len(encoded_query) < 1:
+
+    encoded_query = crawl.encode_search_query(args.query)
+    if not encoded_query:
         print('Search query was empty after encoding it.')
+        exit(1)
+
+    # Query our database for a cached search result set before making an actual web request.
+    cached_models = database.get_search_results(encoded_query)
+    had_models = False
+    for model in cached_models:
+        if model:
+            had_models = True
+            print_model(model, args.format_person, args.format_title)
+    if had_models:
         return
 
+    query_url = u'https://v2.sg.media-imdb.com/suggests/{}/{}.json'
     json_result_raw = crawl.process_url(query_url.format(encoded_query[0], encoded_query))
     if json_result_raw:
         json_result = json.loads(json_result_raw.split('(', 1)[1][:-1])

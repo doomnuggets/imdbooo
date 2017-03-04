@@ -3,7 +3,12 @@ try:
 except ImportError:
     import urlparse
 
-from io import BytesIO
+import re
+
+try:
+    from io import BytesIO
+except ImportError:
+    from StringIO import StringIO as BytesIO
 
 import pycurl
 
@@ -11,7 +16,6 @@ from lib import constants, factory, parser
 from lib.database import (
     store_model,
     get_cached_model,
-    get_search_results,
     store_cast_member,
     store_search_result
 )
@@ -23,7 +27,7 @@ def process_url(url):
     """
     buffer = BytesIO()
     c = pycurl.Curl()
-    c.setopt(c.URL, url)
+    c.setopt(c.URL, url.encode('utf-8'))
     c.setopt(c.FOLLOWLOCATION, True)
     c.setopt(c.WRITEDATA, buffer)
     c.perform()
@@ -53,7 +57,7 @@ def extract_cast(model, db_uri=None):
 
 def extract_acts_by_person(person, db_uri=None):
     """Extracts movies or tv shows the passed *person* played in."""
-    person_source = process_url('http://www.imdb.com/name/' + person.id)
+    person_source = process_url(u'http://www.imdb.com/name/' + person.id)
     for title_id in parser.roles(person_source):
         title = get_cached_model(title_id)
         if title is None:
@@ -97,18 +101,12 @@ def models_from_source(source, db_uri=None):
             if store_model(model, db_uri):
                 yield get_cached_model(model_id, db_uri)
 
+def encode_search_query(query):
+    r = re.sub(r'[^ a-zA-Z0-9]', '', query.lower().replace(' ', '_'), flags=re.VERBOSE)
+    return r
+
 def models_from_json(json_data, db_uri=None):
     """Parses the passed search result *json_data* and extracts the models contained in it."""
-
-    # Before doing any web requests we query our cache database for existing results.
-    if get_search_results(json_data.get('q')):
-        has_elements = False
-        for model in get_search_results(json_data.get('q')):
-            if model:
-                has_elements = True
-                yield model
-        if has_elements:
-            return
 
     if not json_data or not json_data.get('d'):
         return
@@ -139,7 +137,6 @@ def models_from_url(url, db_uri=None):
     try:
         source = process_url(url)
     except AttributeError:
-        print("Failed to find any models in:", url)
         return
 
     for m in models_from_source(source, db_uri):
