@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # Randomly crawl things.
+# Pass any argument to the script to use torify.
 #
 
 use_torify=$1
