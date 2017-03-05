@@ -22,12 +22,13 @@ from lib.database import (
 
 def process_url(url):
     """
-    Takes care of submitting a GET request to the passed *url*. The *callback* parameter will
-    be used to populate the received data.
+    Takes care of submitting a GET request to the passed *url*. The *callback* parameter
+    will be used to populate the received data.
     """
     buffer = BytesIO()
     c = pycurl.Curl()
     c.setopt(c.URL, url.encode('utf-8'))
+    c.setopt(c.HTTPHEADER, ['Accept-Language: en-US'])
     c.setopt(c.FOLLOWLOCATION, True)
     c.setopt(c.WRITEDATA, buffer)
     c.perform()

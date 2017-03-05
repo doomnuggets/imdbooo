@@ -32,9 +32,9 @@ def index_routine(args):
         with open(args.file) as source_file:
             source = source_file.read()
         for model in crawl.models_from_source(source):
-            if isinstance(model, models.Person):
+            if isinstance(model, models.Person) and args.without_roles is False:
                 crawl.extract_acts_by_person(model)
-            if isinstance(model, (models.Movie, models.TVShow)):
+            if isinstance(model, (models.Movie, models.TVShow)) and args.without_cast is False:
                 crawl.extract_cast(model)
             print_model(model, args.format_person, args.format_title)
 
@@ -100,8 +100,10 @@ if __name__ == "__main__":
     search_parser.add_argument('-q', '--query', required=True)
 
     index_parser = sub_parsers.add_parser('index')
-    index_parser.add_argument('--without-cast', action='store_true', default=False)
-    index_parser.add_argument('--without-roles', action='store_true', default=False)
+    index_parser.add_argument('--without-cast', action='store_true', default=False,
+                              help='Disable the indexing of tvshow|movie -> actor')
+    index_parser.add_argument('--without-roles', action='store_true', default=False,
+                              help='Disable the indexing of people -> movie|tvshow')
     model_source = index_parser.add_mutually_exclusive_group(required=True)
     model_source.add_argument('-u', '--url')
     model_source.add_argument('-f', '--file')
@@ -126,4 +128,7 @@ if __name__ == "__main__":
                              'amounts of opening and closing brackets.\n')
             sys.exit(1)
 
-    sys.exit(main(args))
+    try:
+        sys.exit(main(args))
+    except KeyboardInterrupt:
+        sys.exit(1)
