@@ -11,6 +11,8 @@ def print_model(model, fmt_person, fmt_title):
         print(fmt_title.format(id=model.id,
                                title=model.title,
                                year=model.release_year,
+                               plot=model.plot,
+                               poster=model.poster,
                                rating=model.rating))
     else:
         print(fmt_person.format(id=model.id,
@@ -80,7 +82,9 @@ if __name__ == "__main__":
                         {id}
                         {title}
                         {rating}
+                        {plot}
                         {year}
+                        {poster}
                     """)
     ap.add_argument('-p', '--format-person', default=constants.fmt_person,
                     help="""
